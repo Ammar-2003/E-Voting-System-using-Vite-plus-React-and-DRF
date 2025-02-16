@@ -7,7 +7,7 @@ import {
   ChartBarIcon,
   UserIcon,
   LockClosedIcon,
-  ClipboardDocumentListIcon, // Fixed import
+  ClipboardDocumentListIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button, IconButton, Typography } from "@material-tailwind/react";
@@ -23,11 +23,10 @@ export function Sidenav({ brandName }) {
     transparent: "bg-transparent",
   };
 
-  // Define new routes with icons
   const routes = [
     {
       name: "Dashboard",
-      path: "/dashboard",
+      path: "",
       icon: <HomeIcon className="h-5 w-5" />,
     },
     {
@@ -39,26 +38,21 @@ export function Sidenav({ brandName }) {
       name: "Vote",
       path: "/vote",
       icon: <ClipboardDocumentListIcon className="h-5 w-5" />,
-    }, // Fixed icon
+    },
     {
       name: "Results",
       path: "/results",
       icon: <ChartBarIcon className="h-5 w-5" />,
     },
     {
-      name: "User Profile",
-      path: "/user-profile",
+      name: "User Panel",
+      path: "/user-panel",
       icon: <UserIcon className="h-5 w-5" />,
     },
     {
       name: "Admin Panel",
       path: "/admin-panel",
       icon: <CheckCircleIcon className="h-5 w-5" />,
-    },
-    {
-      name: "Login",
-      path: "/login",
-      icon: <LockClosedIcon className="h-5 w-5" />,
     },
   ];
 
@@ -103,7 +97,7 @@ export function Sidenav({ brandName }) {
                         ? "white"
                         : "blue-gray"
                     }
-                    className="flex items-center gap-4 px-4 capitalize"
+                    className="flex items-center gap-4 px-4 capitalize rounded-lg transition-all duration-200 ease-in-out hover:bg-gray-300"
                     fullWidth
                   >
                     {icon}

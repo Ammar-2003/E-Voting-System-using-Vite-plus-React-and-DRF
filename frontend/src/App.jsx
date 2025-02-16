@@ -8,9 +8,9 @@ import Dashboard from "./assets/views/Dashboard";
 import Login from "./assets/views/Login";
 import VotePage from "./assets/views/VotePage";
 import AdminPanel from "./assets/views/AdminPanel";
-import Candidates from "./assets/views/Candidates"; // Fixed typo
+import Candidates from "./assets/views/Candidates";
 import Results from "./assets/views/Results";
-import UserProfile from "./assets/views/UserProfile";
+import UserPanel from "./assets/views/UserPanel";
 import NotFound from "./assets/views/NotFound";
 
 function App() {
@@ -30,10 +30,10 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/vote" element={<VotePage />} />
-              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin-panel" element={<AdminPanel />} />
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/results" element={<Results />} />
-              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/user-panel" element={<UserPanel />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
