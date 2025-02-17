@@ -1,5 +1,8 @@
+# admin.py
+
 from django.contrib import admin
-from .models import VoteTitle ,  VoteOption
-# Register your models here.
-admin.site.register(VoteTitle)
+
+from .models import Election , VoteOption
+
+admin.site.register(Election)
 admin.site.register(VoteOption)

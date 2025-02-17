@@ -1,75 +1,36 @@
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import VoteSerializer, VoteOptionSerializer
-from .models import VoteTitle, VoteOption
-from rest_framework import status
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .models import Election
+from .serializers import ElectionSerializer
+from .serializers import VoteOptionSerializer
+from rest_framework import serializers
+from .models import VoteOption
 
-# Vote API (List, Create)
-@api_view(['GET', 'POST'])
-def vote_list_create(request):
-    if request.method == 'GET':
-        votes = VoteTitle.objects.all()
-        serializer = VoteSerializer(votes, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = VoteSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ElectionListCreateView(generics.ListCreateAPIView):
+    queryset = Election.objects.all()
+    serializer_class = ElectionSerializer
+   # permission_classes = [IsAuthenticated]
 
-# Vote API (Retrieve, Update, Delete)
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def vote_detail(request, pk):
-    vote = get_object_or_404(VoteTitle, pk=pk)
-
-    if request.method == 'GET':
-        serializer = VoteSerializer(vote)
-        return Response(serializer.data)
-
-    elif request.method in ['PUT', 'PATCH']:
-        serializer = VoteSerializer(vote, data=request.data, partial=(request.method == 'PATCH'))
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        vote.delete()
-        return Response({"message": "Vote deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    #def perform_create(self, serializer):
+        # Automatically assign the logged-in user (admin) as the creator
+       # user = self.request.user
+      # # if not user.is_staff:
+        #    raise serializers.ValidationError("Only admin users can create elections.")
+    #    serializer.save(created_by=user)
 
 
-# Vote Option API (List, Create)
-@api_view(['GET', 'POST'])
-def vote_option_list_create(request):
-    if request.method == 'GET':
-        options = VoteOption.objects.all()
-        serializer = VoteOptionSerializer(options, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = VoteOptionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class VoteOptionListCreateView(generics.ListCreateAPIView):
+    queryset = VoteOption.objects.all()
+    serializer_class = VoteOptionSerializer
+    permission_classes = [IsAuthenticated]
 
-# Vote Option API (Retrieve, Update, Delete)
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def vote_option_detail(request, pk):
-    option = get_object_or_404(VoteOption, pk=pk)
+    def perform_create(self, serializer):
+        # Ensure that the election ID exists and is valid
+        election_id = self.request.data.get('election')
+        try:
+            election = Election.objects.get(id=election_id)
+        except Election.DoesNotExist:
+            raise serializers.ValidationError("Election with this ID does not exist.")
 
-    if request.method == 'GET':
-        serializer = VoteOptionSerializer(option)
-        return Response(serializer.data)
-
-    elif request.method in ['PUT', 'PATCH']:
-        serializer = VoteOptionSerializer(option, data=request.data, partial=(request.method == 'PATCH'))
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        option.delete()
-        return Response({"message": "Vote option deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        # Save the vote option with the election
+        serializer.save(election=election)
