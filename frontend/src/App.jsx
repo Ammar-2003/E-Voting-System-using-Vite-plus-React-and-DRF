@@ -34,7 +34,6 @@ function App() {
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/results" element={<Results />} />
               <Route path="/user-panel" element={<UserPanel />} />
-              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </div>

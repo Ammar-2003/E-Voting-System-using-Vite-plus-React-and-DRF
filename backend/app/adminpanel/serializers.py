@@ -1,25 +1,26 @@
 from rest_framework import serializers
-from .models import Election, VoteOption
+from .models import Election, Option
+from django.contrib.auth import get_user_model
+from rest_framework import serializers, viewsets
+from rest_framework.permissions import IsAuthenticated
 
-class VoteOptionSerializer(serializers.ModelSerializer):
+
+
+class OptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VoteOption
-        fields = ["option_text"]
+        model = Option
+        fields = ["id", "option_text" , 'election']
 
 class ElectionSerializer(serializers.ModelSerializer):
-    options = VoteOptionSerializer(many=True)  # Nested serializer for related VoteOptions
+    options = OptionSerializer(many=True, required=False)
 
     class Meta:
         model = Election
-        fields = ["election_number", "title", "options"]
+        fields = ["id", "title", "options"]
 
     def create(self, validated_data):
-        options_data = validated_data.pop("options")
-        # Create the Election instance
+        options_data = validated_data.get("options", [])  # Prevent KeyError
         election = Election.objects.create(**validated_data)
-
-        # Create related VoteOptions
-        for option_data in options_data:
-            VoteOption.objects.create(election=election, **option_data)
-
+        for option in options_data:
+            Option.objects.create(election=election, **option)
         return election

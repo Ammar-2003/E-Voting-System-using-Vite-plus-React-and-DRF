@@ -43,7 +43,7 @@ export function StatisticsCards() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/")
+    fetch("http://127.0.0.1:8000/dashboard")
       .then((response) => response.json())
       .then((data) => {
         setStats(data);

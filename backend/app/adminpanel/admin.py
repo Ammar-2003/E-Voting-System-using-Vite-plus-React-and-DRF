@@ -1,8 +1,6 @@
 # admin.py
-
 from django.contrib import admin
-
-from .models import Election , VoteOption
+from .models import Election , Option
 
 admin.site.register(Election)
-admin.site.register(VoteOption)
+admin.site.register(Option)

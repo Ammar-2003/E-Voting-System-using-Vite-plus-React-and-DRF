@@ -1,6 +1,7 @@
 # Ignore Python virtual environment
 env/
 venv/
+.env
 
 # Ignore node_modules (for React)
 node_modules/
