@@ -43,7 +43,7 @@ export function StatisticsCards() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/dashboard")
+    fetch("http://localhost:8000/dashboard/")
       .then((response) => response.json())
       .then((data) => {
         setStats(data);
@@ -84,9 +84,9 @@ export function StatisticsCards() {
       title: "Most Voted",
       value: stats.most_voted_option,
       footer: {
-        value: "Active",
+        value: "Top",
         color: "text-green-500",
-        label: "currently online",
+        label: "choice",
       },
     },
     {

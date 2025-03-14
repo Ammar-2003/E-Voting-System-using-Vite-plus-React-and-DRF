@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import environ
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     'app.userpanel',
     'app.adminpanel',
     'app.dashboard',
+    'app.social_login',
     "dj_rest_auth",
     "allauth",
     "allauth.account",
@@ -40,6 +42,8 @@ INSTALLED_APPS = [
     "social_django",
     "rest_framework_simplejwt",
     "corsheaders",
+    'rest_framework_simplejwt.token_blacklist',
+
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -116,11 +120,31 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'login.User'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+
+}
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+# Looking to send emails in production? Check out our Email API/SMTP product!
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'e35025ca20ed93'
+EMAIL_HOST_PASSWORD = 'b4a3a49ab86335'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'

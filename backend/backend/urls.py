@@ -22,5 +22,7 @@ urlpatterns = [
     path('dashboard/', include('app.dashboard.urls')),
     path('adminpanel/', include('app.adminpanel.urls')),
     path('userpanel/', include('app.userpanel.urls')),
-    path('', include('app.login.urls')),
+    path('api/v1/auth/', include('app.login.urls')),
+    path('api/v1/auth/', include('app.social_login.urls'))
+
 ]

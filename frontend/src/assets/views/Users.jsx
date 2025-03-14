@@ -1,4 +1,4 @@
-export default function Candidates() {
+export default function Users() {
   const candidates = [
     { id: 1, name: "John Doe", party: "Democratic Party", votes: 450 },
     { id: 2, name: "Jane Smith", party: "Republican Party", votes: 375 },

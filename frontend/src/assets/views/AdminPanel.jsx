@@ -25,8 +25,13 @@ const AdminPanel = () => {
     }
   };
 
-  // Delete Election
+  // Delete Election with Confirmation
   const handleDeleteElection = async (electionId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this election? This action cannot be undone."
+    );
+    if (!confirmDelete) return;
+
     try {
       await fetch(`http://localhost:8000/adminpanel/delete/${electionId}/`, {
         method: "DELETE",
@@ -37,8 +42,13 @@ const AdminPanel = () => {
     }
   };
 
-  // Delete Option
+  // Delete Option with Confirmation
   const handleDeleteOption = async (optionId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this option?"
+    );
+    if (!confirmDelete) return;
+
     try {
       await fetch(
         `http://localhost:8000/adminpanel/vote-options/delete/${optionId}/`,
@@ -50,6 +60,12 @@ const AdminPanel = () => {
     } catch (error) {
       console.error("Error deleting option:", error);
     }
+  };
+
+  // Auto-fetch elections after modal closes
+  const handleElectionCreated = () => {
+    setIsElectionModalOpen(false);
+    fetchElections(); // Fetch latest elections after creation
   };
 
   return (
@@ -125,26 +141,8 @@ const AdminPanel = () => {
       {isElectionModalOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto">
-            <ElectionForm onClose={() => setIsElectionModalOpen(false)} />
-          </div>
-        </div>
-      )}
-
-      {/* Update Election Modal */}
-      {selectedElection && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto">
-            <UpdateElection
-              election={selectedElection}
-              onUpdate={(updatedElection) => {
-                setElections((prev) =>
-                  prev.map((e) =>
-                    e.id === updatedElection.id ? updatedElection : e
-                  )
-                );
-                setSelectedElection(null);
-              }}
-              onClose={() => setSelectedElection(null)}
+            <ElectionForm
+              onClose={handleElectionCreated} // Auto-reload after election is created
             />
           </div>
         </div>

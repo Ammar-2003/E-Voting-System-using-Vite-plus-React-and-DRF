@@ -4,12 +4,12 @@ import Navbar from "./assets/components/Navbar";
 import ErrorBoundary from "./assets/components/ErrorBoundary";
 
 // Importing Views
-import Dashboard from "./assets/views/Dashboard";
+import Dashboard from "./assets/views/dashboard";
 import Login from "./assets/views/Login";
 import VotePage from "./assets/views/VotePage";
-import AdminPanel from "./assets/views/AdminPanel";
-import Candidates from "./assets/views/Candidates";
-import Results from "./assets/views/Results";
+import AdminPanel from "./assets/views/adminpanel";
+import Candidates from "./assets/views/Users";
+import Results from "./assets/views/results";
 import UserPanel from "./assets/views/UserPanel";
 import NotFound from "./assets/views/NotFound";
 

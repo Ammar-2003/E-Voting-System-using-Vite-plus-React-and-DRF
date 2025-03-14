@@ -30,14 +30,9 @@ export function Sidenav({ brandName }) {
       icon: <HomeIcon className="h-5 w-5" />,
     },
     {
-      name: "Candidates",
-      path: "/candidates",
+      name: "Users",
+      path: "/users",
       icon: <UserGroupIcon className="h-5 w-5" />,
-    },
-    {
-      name: "Vote",
-      path: "/vote",
-      icon: <ClipboardDocumentListIcon className="h-5 w-5" />,
     },
     {
       name: "Results",
