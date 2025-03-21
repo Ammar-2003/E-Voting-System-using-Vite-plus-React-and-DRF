@@ -26,7 +26,7 @@ def register_social_user(provider, email, first_name, last_name):
     old_user=User.objects.filter(email=email)
     if old_user.exists():
         if provider == old_user[0].auth_provider:
-            register_user=authenticate(email=email, password=settings.SOCIAL_AUTH_PASSWORD)
+            register_user = authenticate(email=email, password=settings.SOCIAL_AUTH_PASSWORD)
 
             return {
                 'full_name':register_user.get_full_name,
@@ -42,7 +42,8 @@ def register_social_user(provider, email, first_name, last_name):
             'email':email,
             'first_name':first_name,
             'last_name':last_name,
-            'password':settings.SOCIAL_AUTH_PASSWORD
+            'password': getattr(settings, "SOCIAL_AUTH_PASSWORD", "default_password")
+            
         }
         user=User.objects.create_user(**new_user)
         user.auth_provider=provider

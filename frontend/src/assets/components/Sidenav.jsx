@@ -6,8 +6,6 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   UserIcon,
-  LockClosedIcon,
-  ClipboardDocumentListIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button, IconButton, Typography } from "@material-tailwind/react";
@@ -18,36 +16,32 @@ export function Sidenav({ brandName }) {
   const { sidenavColor, sidenavType, openSidenav } = controller;
 
   const sidenavTypes = {
-    dark: "bg-gradient-to-br from-gray-800 to-gray-900",
-    white: "bg-white shadow-sm",
+    dark: "bg-gray-900 text-white",
+    white: "bg-white shadow-lg text-gray-900",
     transparent: "bg-transparent",
   };
 
   const routes = [
-    {
-      name: "Dashboard",
-      path: "",
-      icon: <HomeIcon className="h-5 w-5" />,
-    },
+    { name: "Dashboard", path: "/", icon: <HomeIcon className="h-6 w-6" /> },
     {
       name: "Users",
       path: "/users",
-      icon: <UserGroupIcon className="h-5 w-5" />,
+      icon: <UserGroupIcon className="h-6 w-6" />,
     },
     {
       name: "Results",
       path: "/results",
-      icon: <ChartBarIcon className="h-5 w-5" />,
+      icon: <ChartBarIcon className="h-6 w-6" />,
     },
     {
       name: "User Panel",
       path: "/user-panel",
-      icon: <UserIcon className="h-5 w-5" />,
+      icon: <UserIcon className="h-6 w-6" />,
     },
     {
       name: "Admin Panel",
       path: "/admin-panel",
-      icon: <CheckCircleIcon className="h-5 w-5" />,
+      icon: <CheckCircleIcon className="h-6 w-6" />,
     },
   ];
 
@@ -55,14 +49,12 @@ export function Sidenav({ brandName }) {
     <aside
       className={`${sidenavTypes[sidenavType]} ${
         openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100`}
+      } 
+      fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl shadow-2xl transition-transform duration-300 xl:translate-x-0 p-4`}
     >
-      <div className="relative">
-        <Link to="/" className="py-6 px-8 text-center">
-          <Typography
-            variant="h6"
-            color={sidenavType === "dark" ? "white" : "blue-gray"}
-          >
+      <div className="relative flex flex-col items-center">
+        <Link to="/" className="py-6 text-center w-full">
+          <Typography variant="h5" className="font-bold text-lg uppercase">
             {brandName}
           </Typography>
         </Link>
@@ -71,35 +63,29 @@ export function Sidenav({ brandName }) {
           color="white"
           size="sm"
           ripple={false}
-          className="absolute right-0 top-0 xl:hidden"
+          className="absolute right-2 top-4 xl:hidden"
           onClick={() => setOpenSidenav(dispatch, false)}
         >
-          <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-white" />
+          <XMarkIcon className="h-6 w-6 text-gray-500" />
         </IconButton>
       </div>
-      <div className="m-4">
-        <ul className="flex flex-col gap-1">
+      <div className="mt-4">
+        <ul className="flex flex-col gap-2">
           {routes.map(({ name, path, icon }) => (
             <li key={name}>
               <NavLink to={path}>
                 {({ isActive }) => (
                   <Button
-                    variant={isActive ? "gradient" : "text"}
-                    color={
+                    variant="text"
+                    className={`flex items-center gap-4 p-4 w-full text-left rounded-lg transition-all duration-200 
+                    ${
                       isActive
-                        ? sidenavColor
-                        : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                    }
-                    className="flex items-center gap-4 px-4 capitalize rounded-lg transition-all duration-200 ease-in-out hover:bg-gray-300"
-                    fullWidth
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
+                        : "hover:bg-gray-200 text-gray-800"
+                    }`}
                   >
                     {icon}
-                    <Typography
-                      color="inherit"
-                      className="font-medium capitalize"
-                    >
+                    <Typography variant="subtitle1" className="font-medium">
                       {name}
                     </Typography>
                   </Button>

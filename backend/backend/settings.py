@@ -46,24 +46,21 @@ INSTALLED_APPS = [
 
 ]
 
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+
+
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
-        "APP": {
-            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
-            "secret": os.getenv("GOOGLE_CLIENT_SECRET"),
-            "key": "",
-        }
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
     },
     "github": {
-        "APP": {
-            "client_id": env("GITHUB_CLIENT_ID"),
-            "secret": env("GITHUB_CLIENT_SECRET"),
-            "key": "",
-        }
-    },
+        "SCOPE": ["user", "email"],
+    }
 }
-
-
 
 
 # Django Allauth settings
@@ -74,8 +71,13 @@ ACCOUNT_EMAIL_REQUIRED = True
 CORS_ALLOW_ALL_ORIGINS = True 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  
-    "http://127.0.0.1:8000",  
+    "http://localhost:8000",  
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:8000",  
+]
+
 
 
 MIDDLEWARE = [
@@ -145,6 +147,9 @@ EMAIL_HOST_USER = 'e35025ca20ed93'
 EMAIL_HOST_PASSWORD = 'b4a3a49ab86335'
 EMAIL_PORT = '2525'
 EMAIL_USE_TLS = True
+
+SOCIAL_AUTH_PASSWORD = os.getenv("SOCIAL_AUTH_PASSWORD")
+
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'

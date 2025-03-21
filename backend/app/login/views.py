@@ -12,6 +12,8 @@ from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.permissions import IsAuthenticated
 from .models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
 # Create your views here.
 
 
@@ -34,29 +36,46 @@ class RegisterView(GenericAPIView):
 
 
 
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
 class VerifyUserEmail(GenericAPIView):
     def post(self, request):
         try:
             passcode = request.data.get('otp')
-            user_pass_obj=OneTimePassword.objects.get(otp=passcode)
-            user=user_pass_obj.user
+            user_pass_obj = OneTimePassword.objects.get(otp=passcode)
+            user = user_pass_obj.user
+
             if not user.is_verified:
-                user.is_verified=True
+                user.is_verified = True
                 user.save()
+
+                # ✅ Generate and return JWT token after verification
+                tokens = get_tokens_for_user(user)
+                
                 return Response({
-                    'message':'account email verified successfully'
+                    'message': 'Account email verified successfully',
+                    'tokens': tokens  # Send token to frontend
                 }, status=status.HTTP_200_OK)
-            return Response({'message':'passcode is invalid user is already verified'}, status=status.HTTP_204_NO_CONTENT)
-        except OneTimePassword.DoesNotExist as identifier:
-            return Response({'message':'passcode not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'message': 'Passcode is invalid, user is already verified'}, status=status.HTTP_204_NO_CONTENT)
+        
+        except OneTimePassword.DoesNotExist:
+            return Response({'message': 'Passcode not provided or incorrect'}, status=status.HTTP_400_BAD_REQUEST)
         
 
 class LoginUserView(GenericAPIView):
-    serializer_class=LoginSerializer
+    serializer_class = LoginSerializer
+
     def post(self, request):
-        serializer= self.serializer_class(data=request.data, context={'request': request})
+        serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class PasswordResetRequestView(GenericAPIView):

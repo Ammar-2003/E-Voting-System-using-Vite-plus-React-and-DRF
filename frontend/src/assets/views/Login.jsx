@@ -1,201 +1,121 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { TEInput, TERipple } from "tw-elements-react";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
-import loginicon from "./loginicon.png";
+import { useNavigate } from "react-router-dom";
+import { showToast } from "./ToastComponent";
 
 export default function Login() {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    username: "",
-    email: "",
-    password: "",
-    confirm_password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Handle input changes
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
-  // Handle signup submission
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirm_password) {
-      alert("Passwords do not match!");
-      return;
-    }
-
+  // Handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
     setLoading(true);
+
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/login/register/",
-        formData
+        "http://localhost:8000/api/v1/auth/login/",
+        formData,
+        { headers: { "Content-Type": "application/json" } }
       );
-      localStorage.setItem("token", response.data.token);
-      alert("Signup successful!");
-    } catch (error) {
-      console.error("Signup Error:", error);
-      alert("Signup failed. Try again.");
-    }
-    setLoading(false);
-  };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8000/auth/google/login/"
-      );
-      console.log("Google Login Response:", response.data); // Debugging
+      console.log("API Response:", response.data);
 
-      if (response.data.auth_url) {
-        window.location.href = response.data.auth_url;
-      } else {
-        console.error("Error: auth_url is undefined.");
+      // Extract tokens from response
+      const { access_token, refresh_token } = response.data;
+
+      if (!access_token) {
+        throw new Error("Authentication failed. No token received.");
       }
-    } catch (error) {
-      console.error("Google Login Error:", error);
-    }
-  };
 
-  // Handle GitHub Login
-  const handleGitHubLogin = async () => {
-    try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/auth/github/login/"
-      );
-      window.location.href = response.data.auth_url;
+      // Store tokens securely
+      localStorage.setItem("authToken", access_token);
+      localStorage.setItem("refreshToken", refresh_token || "");
+
+      showToast("Login Successful!");
+      navigate("/profile");
     } catch (error) {
-      console.error("GitHub Login Error:", error);
+      console.error("Login Failed:", error.response?.data || error.message);
+      setError(
+        error.response?.data?.detail || "Login failed! Check your credentials."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <section className="h-screen flex items-center justify-center bg-white">
-      <div className="container p-10 flex justify-center">
-        <div className="w-full max-w-md">
-          <div className="block rounded-lg bg-white shadow-lg p-8">
-            {/* Logo */}
-            <div className="text-center mb-6">
-              <img
-                src={loginicon}
-                className="mx-auto w-24 h-24"
-                alt="Login Icon"
-              />
-            </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h2 className="text-2xl font-bold mb-6">Login to continue</h2>
 
-            <form onSubmit={handleSignup}>
-              <p className="mb-4 text-center">Sign Up First</p>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+        <form onSubmit={handleSubmit}>
+          {/* Email Input */}
+          <input
+            type="email"
+            placeholder="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="mb-4 p-2 border rounded w-full"
+            required
+          />
 
-              {/* First Name & Last Name */}
-              <div className="flex space-x-2 mb-4">
-                <TEInput
-                  type="text"
-                  label="First Name"
-                  name="first_name"
-                  onChange={handleChange}
-                  className="w-1/2"
-                />
-                <TEInput
-                  type="text"
-                  label="Last Name"
-                  name="last_name"
-                  onChange={handleChange}
-                  className="w-1/2"
-                />
-              </div>
+          {/* Password Input */}
+          <input
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="mb-2 p-2 border rounded w-full"
+            required
+          />
 
-              {/* Username */}
-              <TEInput
-                type="text"
-                label="Username"
-                name="username"
-                onChange={handleChange}
-                className="mb-4"
-              />
+          {/* Forgot Password Link */}
+          <p
+            className="text-sm text-blue-600 hover:underline cursor-pointer mb-4 text-right"
+            onClick={() => navigate("/forget-password")}
+          >
+            Forgot Password?
+          </p>
 
-              {/* Email */}
-              <TEInput
-                type="email"
-                label="Email"
-                name="email"
-                onChange={handleChange}
-                className="mb-4"
-              />
+          {/* Error Message */}
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-              {/* Password */}
-              <TEInput
-                type="password"
-                label="Password"
-                name="password"
-                onChange={handleChange}
-                className="mb-4"
-              />
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className={`px-4 py-2 rounded w-full text-white ${
+              loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+            }`}
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
 
-              {/* Confirm Password */}
-              <TEInput
-                type="password"
-                label="Confirm Password"
-                name="confirm_password"
-                onChange={handleChange}
-                className="mb-4"
-              />
-
-              {/* Submit button */}
-              <div className="mb-6 text-center">
-                <TERipple rippleColor="light" className="w-full">
-                  <button
-                    className="w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal shadow-md transition duration-150 ease-in-out hover:shadow-lg focus:outline-none focus:ring-0 bg-black text-white"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? "Signing Up..." : "Sign Up"}
-                  </button>
-                </TERipple>
-              </div>
-
-              {/* Google & GitHub OAuth Login */}
-              <div className="mb-4 space-y-2">
-                <TERipple rippleColor="light" className="w-full">
-                  <button
-                    className="w-full flex items-center justify-center border-2 border-gray-300 px-6 py-2 rounded text-sm font-medium hover:bg-gray-100"
-                    type="button"
-                    onClick={handleGoogleLogin}
-                  >
-                    <FcGoogle className="mr-2 text-lg" /> Continue with Google
-                  </button>
-                </TERipple>
-                <TERipple rippleColor="light" className="w-full">
-                  <button
-                    className="w-full flex items-center justify-center border-2 border-gray-300 px-6 py-2 rounded text-sm font-medium hover:bg-gray-100"
-                    type="button"
-                    onClick={handleGitHubLogin}
-                  >
-                    <FaGithub className="mr-2 text-lg" /> Continue with GitHub
-                  </button>
-                </TERipple>
-              </div>
-
-              {/* Register button */}
-              <div className="flex items-center justify-between">
-                <p className="text-sm">Already have an account?</p>
-                <TERipple rippleColor="light">
-                  <button
-                    type="button"
-                    className="rounded border-2 border-black px-6 py-1 text-xs font-medium uppercase transition duration-150 ease-in-out hover:bg-black hover:text-white focus:outline-none focus:ring-0"
-                  >
-                    Login
-                  </button>
-                </TERipple>
-              </div>
-            </form>
-          </div>
+        {/* Sign Up Link */}
+        <div className="mt-4 text-center">
+          <p className="text-gray-600 text-sm">
+            Don't have an account?{" "}
+            <span
+              className="text-blue-600 font-semibold cursor-pointer hover:underline"
+              onClick={() => navigate("/signup")}
+            >
+              Sign Up
+            </span>
+          </p>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
